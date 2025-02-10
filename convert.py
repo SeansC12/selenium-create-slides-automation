@@ -16,5 +16,5 @@ for i, line in enumerate(prompt.split('\n')):
     #     html_text += f"<p class=\"block block-paragraph\">{html.escape(line)}</p>"
 
 
-with open('html.txt', 'w') as f:
+with open('slide_outline.txt', 'w') as f:
     f.write(html_text)

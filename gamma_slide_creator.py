@@ -19,9 +19,9 @@ class GammaSlideCreator():
         self.driver = Driver(uc=True, headless=False, binary_location="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser")
         self.wait = WebDriverWait(self.driver, timeout=15)
 
-        self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time=6)
+        # self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time=6)
 
-        self.driver.uc_gui_click_captcha()
+        # self.driver.uc_gui_click_captcha()
 
         self.vars = {}
     
@@ -49,11 +49,14 @@ class GammaSlideCreator():
         self.driver.quit()
     
     def create_slides(self):
-        self.driver.get("https://gamma.app/signin")
+        # self.driver.get("https://gamma.app/signin")
+        self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time=6)
+
+        self.driver.uc_gui_click_captcha()
         
-        prompt = ""
-        with open('html.txt', 'r') as f:
-            prompt = f.read()
+        slide_outline = ""
+        with open('slide_outline.txt', 'r') as f:
+            slide_outline = f.read()
         
         email = os.environ.get("GAMMA_EMAIL")
         password = os.environ.get("GAMMA_PASSWORD")
@@ -79,11 +82,11 @@ class GammaSlideCreator():
         time.sleep(3)
         element = self.driver.find_element(By.XPATH, "//div[@data-testid=\'ai-content-editor\']")
         interval = 1000
-        lines = [prompt[i:i+interval] for i in range(0, len(prompt), interval)]
+        lines = [slide_outline[i:i+interval] for i in range(0, len(slide_outline), interval)]
 
         for l in lines:
             element.send_keys(l)
-        # self.driver.execute_script("if(arguments[0].contentEditable === 'true') {arguments[0].innerHTML = '" + prompt + "'}", element)
+        # self.driver.execute_script("if(arguments[0].contentEditable === 'true') {arguments[0].innerHTML = '" + slide_outline + "'}", element)
 
         time.sleep(5)
 
@@ -204,4 +207,10 @@ class GammaSlideCreator():
         self.driver.execute_script("window.scrollTo(0,0)")
         # 65 | runScript | window.scrollTo(0,0) | 
         self.driver.execute_script("window.scrollTo(0,0)")
-  
+
+        time.sleep(10)
+        return self.driver.current_url
+
+# Slides = GammaSlideCreator()
+# Slides.setup_method()
+# Slides.create_slides()
