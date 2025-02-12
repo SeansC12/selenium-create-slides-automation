@@ -221,6 +221,6 @@ class GammaSlideCreator():
         time.sleep(10)
         return self.driver.current_url
 
-Slides = GammaSlideCreator()
-Slides.setup_method()
-Slides.create_slides()
+# Slides = GammaSlideCreator()
+# Slides.setup_method()
+# Slides.create_slides()
