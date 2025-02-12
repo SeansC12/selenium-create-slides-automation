@@ -17,7 +17,7 @@ for i, line in enumerate(prompt.split('\n')):
 
 
 # Replace all quotes with \", single quotes with \', and backslashes with \\
-output_text = re.sub(r'(["\'\\])', r'\\\1', output_text)
+output_text = re.sub(r'(["\'])', r'\\\1', output_text)
 
 # Write the modified content to a new file
 with open('test.txt', 'w') as f:
