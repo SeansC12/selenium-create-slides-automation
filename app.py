@@ -1,6 +1,7 @@
 from flask import Flask, request
 from gamma_slide_creator import GammaSlideCreator
 import html
+import re
 
 app = Flask(__name__)
 
@@ -9,13 +10,10 @@ Slides.setup_method()
 # Slides.create_slides()
 
 def sanitise_slide_outline_and_save_to_file(slide_outline):
-    html_text = ""
-
-    for line in slide_outline.split('\n'):
-        html_text += html.escape(line) + "\\n"
+    output_text = re.sub(r'(["\'])', r'\\\1', slide_outline)
 
     with open('slide_outline.txt', 'w') as f:
-        f.write(html_text)
+        f.write(output_text)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -26,5 +24,4 @@ def index():
     
     gamma_url = Slides.create_slides()
 
-    # slide_outline = unquote()
     return gamma_url
