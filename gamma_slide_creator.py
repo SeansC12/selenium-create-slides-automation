@@ -34,17 +34,25 @@ class GammaSlideCreator():
         self.driver.find_element(By.ID, "email").click()
         # 4 | type | id=email | sean.ulric.chua@gmail.com
         self.driver.find_element(By.ID, "email").send_keys(email)
+        time.sleep(3)
         # 5 | type | id=password | ThunderLightning12#
         self.driver.find_element(By.ID, "password").send_keys(password)
         time.sleep(3)
-        self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+        # self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+        self.driver.find_element(By.XPATH, "//button[contains(., \"Sign in\")]").click()
         time.sleep(5)
 
         try:
-            self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+            self.driver.find_element(By.XPATH, "//button[contains(., \"Sign in\")]").click()
         except Exception as e:
             print(e)
-        # self.driver.find_element(By.XPATH, "//button[contains(., \"Sign in\")]").click()
+        
+        # time.sleep(5)
+        
+        # try:
+        #     self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
+        # except Exception as e:
+        #     print(e)
 
     def teardown_method(self, method):
         self.driver.quit()
@@ -62,6 +70,7 @@ class GammaSlideCreator():
         email = os.environ.get("GAMMA_EMAIL")
         password = os.environ.get("GAMMA_PASSWORD")
         
+        time.sleep(5)
         self.login_with_email_and_pwd(email, password)
 
         time.sleep(5)
@@ -85,10 +94,15 @@ class GammaSlideCreator():
         # interval = 50
         # lines = [slide_outline[i:i+interval] for i in range(0, len(slide_outline), interval)]
 
-        for i in slide_outline.split("\\n"):
-            element.send_keys(i)
-            element.send_keys(Keys.RETURN)
-        # self.driver.execute_script("if(arguments[0].contentEditable === 'true') {arguments[0].innerHTML = '" + slide_outline + "'}", element)
+        # for i in slide_outline.split("\\n"):
+        #     element.send_keys(i)
+        #     element.send_keys(Keys.RETURN)
+        try:
+            self.driver.execute_script("if(arguments[0].contentEditable === 'true') {arguments[0].innerHTML = `" + slide_outline + "`}", element)
+        except:
+            for i in slide_outline.split("\\n"):
+                element.send_keys(i)
+                element.send_keys(Keys.RETURN)
 
         time.sleep(5)
 
@@ -221,6 +235,6 @@ class GammaSlideCreator():
         time.sleep(10)
         return self.driver.current_url
 
-# Slides = GammaSlideCreator()
-# Slides.setup_method()
-# Slides.create_slides()
+Slides = GammaSlideCreator()
+Slides.setup_method()
+Slides.create_slides()
