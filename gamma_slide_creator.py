@@ -7,6 +7,7 @@ from selenium import webdriver
 from seleniumbase import Driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
 load_dotenv()
@@ -17,8 +18,8 @@ class GammaSlideCreator():
         options.page_load_strategy = "normal"
         # options.add_argument("--headless=new")
 
-        self.driver = Driver(uc=True, headless=False, binary_location="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser")
-        self.wait = WebDriverWait(self.driver, timeout=15)
+        self.driver = Driver(uc=True, incognito=True, headless=False, binary_location="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser")
+        self.wait = WebDriverWait(self.driver, timeout=20)
 
         # self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time=6)
 
@@ -31,37 +32,37 @@ class GammaSlideCreator():
         # 2 | setWindowSize | 2560x1342 | 
         self.driver.set_window_size(2560, 1342)
         # 3 | click | id=email | 
+        time.sleep(1)
         self.driver.find_element(By.ID, "email").click()
         # 4 | type | id=email | sean.ulric.chua@gmail.com
         self.driver.find_element(By.ID, "email").send_keys(email)
-        time.sleep(3)
+
         # 5 | type | id=password | ThunderLightning12#
+        self.driver.find_element(By.ID, "password").click()
         self.driver.find_element(By.ID, "password").send_keys(password)
-        time.sleep(3)
+        time.sleep(1)
         # self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
-        self.driver.find_element(By.XPATH, "//button[contains(., \"Sign in\")]").click()
+
+        for _ in range(3):
+            try:
+                self.driver.uc_click("button:contains(\"Sign in\")")
+                # self.driver.find_element(By.XPATH, "//button[contains(., \"Sign in\")]").click()
+            except Exception as e:
+                print(e)
+                break
+            time.sleep(2)
         time.sleep(5)
 
-        try:
-            self.driver.find_element(By.XPATH, "//button[contains(., \"Sign in\")]").click()
-        except Exception as e:
-            print(e)
-        
-        # time.sleep(5)
-        
-        # try:
-        #     self.driver.find_element(By.ID, "password").send_keys(Keys.ENTER)
-        # except Exception as e:
-        #     print(e)
 
     def teardown_method(self, method):
         self.driver.quit()
     
     def create_slides(self):
         # self.driver.get("https://gamma.app/signin")
-        self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time=6)
+        self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time=2)
 
         self.driver.uc_gui_click_captcha()
+
         
         slide_outline = ""
         with open('slide_outline.txt', 'r') as f:
@@ -70,15 +71,15 @@ class GammaSlideCreator():
         email = os.environ.get("GAMMA_EMAIL")
         password = os.environ.get("GAMMA_PASSWORD")
         
-        time.sleep(5)
+        self.driver.reconnect(0.1)
         self.login_with_email_and_pwd(email, password)
 
         time.sleep(5)
-        revealed = self.driver.find_element(By.XPATH, "//button[@data-testid=\'create-from-ai-button\']")
-        self.wait.until(lambda _: revealed.is_displayed())
-
         # Create new
-        self.driver.find_element(By.XPATH, "//button[@data-testid=\'create-from-ai-button\' and contains(., \'Create new\')]").click()
+        try:
+            self.driver.find_element(By.XPATH, "//button[@data-testid=\'create-from-ai-button\' and contains(., \'Create new\')]").click()
+        except Exception:
+            self.driver.uc_open_with_reconnect("https://gamma.app/signin", reconnect_time="breakpoint")
         
         # Paste in text
         time.sleep(3)
@@ -235,6 +236,6 @@ class GammaSlideCreator():
         time.sleep(10)
         return self.driver.current_url
 
-Slides = GammaSlideCreator()
-Slides.setup_method()
-Slides.create_slides()
+# Slides = GammaSlideCreator()
+# Slides.setup_method()
+# Slides.create_slides()
